@@ -1,0 +1,17 @@
+#!/bin/bash
+if [ $# -gt 1 ]
+then
+  echo "usage: lastfirst [file]" >&2
+  exit 1
+fi
+if [ $# -eq 1 ]; then
+  if [ ! -e "$1" ]; then
+    echo "unable to open file" >&2
+    exit 2
+  else
+    rev $1 | tac
+  fi
+else
+  rev | tac
+fi
+exit 0

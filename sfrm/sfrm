@@ -1,0 +1,26 @@
+#Austin Willis
+#Homework 2
+#!/bin/bash
+TRASH="$HOME/.trash" #constant for trash directory
+if [ $# -eq 0 ]; then  #check for command line arguments
+  echo This script moves files into your trash directory
+  echo usage: sfrm filename \<filename\> ...
+  exit
+fi
+#make trash directory if it doesn't already exit
+mkdir -p "$TRASH"
+for var in "$@" #for each command line argument
+do
+  NAME="${var##*/}" #trim off directory from filename entered
+  if [ ! -e "$var" ]; then   #check if file exists
+    echo "unable to open file $var" >&2
+  else
+    while [ -e "$TRASH/$NAME" ]; do  #check if file is already in the trash folder
+      echo "Cannot move $var; $NAME already exists in $TRASH"
+      echo "New name to store under: "
+      read NAME   #get new name if file already exists in trash
+    done 
+    mv $var $TRASH/$NAME  #move file to trash
+    echo "Moved $var to trash"
+  fi
+done

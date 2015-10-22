@@ -1,0 +1,33 @@
+Austin Willis
+Connect 4 game
+
+How to play:
+  Start the game by running the cfour executable
+
+  You will be prompted with a menu which is navigated with the arrow 
+  keys and an option can be selected with <ENTER>
+
+  Selecting 'Play against the computer' will prompt you to enter a name
+  to server as your username.
+  You will then be presented with the gameboard. A line at the top of the board shows the currently selected row
+  which can be moved with the arrow keys.
+ 
+  Pressing the down arrow key will drop your piece in the column wihch are represented with white 'O' characters.
+
+  The computer will the imediately play it's piece which is represented with a red 'O' character
+
+  
+  Selecting 'Play against a person' will prompt each of the two players in turn to enter a username. Once the usernames
+  are entered the gameboard will load.
+
+  Each player places their piece in the same manner as a single player playing against the computer. The current players
+  turn is shown below the board with the username entered before the start of the game. Player 1 goes first using white pieces
+  and Player 2 goes second with red pieces.
+
+  When a game has ended with either a winner or a tie the results are recorded for each player. The winner will be displayed and
+  you may return to the main menu by pressing any key. You may return to the manu at any time during a game by pressing the 
+  F1 key.
+
+  Selecting 'Display player records' will show each player that has finished a game along with their win-loss-tie record; 
+
+  The game can be exited by using the 'Exit' option from the main menu.

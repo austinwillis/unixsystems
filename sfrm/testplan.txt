@@ -1,0 +1,32 @@
+$ touch test
+$ ./sfrm test
+Expected output: Moved test to trash
+test should now have been moved from the current directory to the trash folder
+$ ./sfrm test
+Expected output: unable to open file test
+$ ./unsfrm test
+Expected output: Moved test from trash to .
+test should now be in the current directory
+$ ./sfrm test
+$ ./emptytrash
+$ ./unsfrm test
+Expected output: unable to open file test
+test should be deleted
+$ mkdir test
+$ touch test/new
+$ touch test/file
+$ ./sfrm test/new test/file
+Expected output: Moved test/new to trash
+                 Moved test/file to trash
+new and file should now be in the trash folder
+$ ./unsfrm new file
+Expected output: Moved new from trash to .
+                 MOved file from trash to .
+Both new and file should now be in the current directory
+$ ./sfrm new file
+$ ./unsfrm new file test
+Expected output: Moved new to trash
+                 Moved file to trash
+                 Moved new from trash to test
+                 Moved file from trash to test
+Both new and file should now be in the test directory

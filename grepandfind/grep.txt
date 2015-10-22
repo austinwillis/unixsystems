@@ -1,0 +1,13 @@
+Austin Willis
+CS375 Homework 2
+
+1) grep a
+2) grep -P '^[^a]*a{1}[^a]*$'
+3) grep -P '^(?=.*a)(?=.*e)(?=.*i)(?=.*o)(?=.*u)'
+4) grep -P '.*a.*e.*i.*o.*u.*'
+5) grep -P '^(?=^[^a]*a{1}[^a]*$)(?=^[^e]*e{1}[^e]*$)(?=^[^i]*i{1}[^i]*$)(?=^[^o]*o{1}[^o]*$)(?=^[^u]*u{1}[^u]*$)'
+6) grep -P '^[^aeiou]*a{1}[^aeiou]*e{1}[^aeiou]*i{1}[^aeiou]*o{1}[^aeiou]*u{1}[^aeiou]*$'
+7) find . -name *.o
+8) find . -type f -size +50k
+9) find /home -type f -name *.o -size +50k
+10) find /home -type f -name *.o -size +50k -atime +7 -exec rm -f {} \;

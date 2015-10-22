@@ -1,0 +1,4 @@
+#Austin Willis
+#Homework 2
+#!/bin/bash
+rm -rf $HOME/.trash/*

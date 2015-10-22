@@ -1,0 +1,11 @@
+PWTEXT 2
+
+url=google.com
+userid=austin
+passwd=password
+comment=google
+
+url=test.com
+userid=austin
+passwd=password
+comment=test

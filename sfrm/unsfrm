@@ -1,0 +1,29 @@
+#Austin Willis
+#Homework 2
+#!/bin/bash
+TRASH="$HOME/.trash"
+DIR="." #default directory is the current directory
+if [ $# -eq 0 ]; then   #check for command line arguments
+  echo This script moves files from your trash directory into another directory
+  echo usage: sfrm filename \<filename\> ... \<directory\>
+  exit
+fi
+array=("$@")  # make an array equal to command line arguments
+last=${array[$#-1]}   #check if last argument is a directory
+#remove last element from array if it is a directory and set it to DIR
+if [ -d $last ] && [ $# -gt 1 ]; then
+  DIR=$last
+  unset array[$#-1]
+fi
+for var in "$@"
+do
+  #check if file exists and copy to DIR if it does
+  if [ ! -e "$TRASH/$var" ] && [ ! -d $var ]; then
+    echo "unable to open file $var" >&2
+  else
+    if [ ! -d $var ]; then
+      echo "Moved $var from trash to $DIR"
+      mv $TRASH/$var $DIR
+    fi
+  fi
+done
