@@ -1,0 +1,40 @@
+Austin Willis
+Password keeper project
+
+The program can be run with 'php pwkeep.php'.
+
+The first time you run the application you will be prompted to create
+a new password. When you confirm your password a file will be create at
+'.pwkeep/<yourusername>.txt. The password you entered is hashed and stored
+in this file. If a file exists in that location when the application runs
+it will prompt you for your password and compare its hash to the string in
+that file.
+
+Once logged in, you will be prompted to enter an option. The 'h' option
+will display all of the available options.
+
+The application can be terminated by entering the 'q' option.
+
+Entering 'a' will prompt you to add the information for a new site. You
+can only add one record for each site.
+
+You can use the 'r' option to replace a site record with a new one.
+
+Entering 'd' will prompt you for the url of a site whose record you would
+like to delete.
+
+Entering 'o' will prompt you for a url and then search for a record for
+that url. If none is found it will alert you that it did not exist.
+
+Entering 'l' will display all of the records that have been entered.
+
+Enter 's' will prompt you to enter a string and then search all of the
+records for that string. A list will be displayed of all records that
+contained the string you searched for.
+
+Entering 'e' will prompt you for a filename to export the data to. All of
+the records will have their information written to that file.
+
+Files in the format created with the export command can be imported with
+the 'i' command. Any records that match those in the imported file will be
+replaced by the ones in the file.

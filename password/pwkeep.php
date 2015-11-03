@@ -1,10 +1,13 @@
 <?php
+/*Austin Willis
+Password Keeper
+CS 375*/
 $handle = fopen ("php://stdin","r");
 $user = get_current_user();
 $password;
 
 function help() {
-    echo "\nOptions:\nh : print this information\na : add site record\no : open a url\nr : replace site record\nd : delete site record\ns : search all entries for a string\nl : list site records\ne: export user records\ni : import user records\nq : quit\n\nEnter an option: ";
+    echo "\nOptions:\nh : print this information\na : add site record\no : open a url\nr : replace site record\nd : delete site record\ns : search all entries for a string\nl : list site records\ne : export user records\ni : import user records\nq : quit\n\nEnter an option: ";
 }
 
 function userinput() {
@@ -152,8 +155,10 @@ function replaceurl() {
     if (file_exists($site)) {
   	unlink($site);  
 	echo "Replacing $site.\n";
+        newsite();
+    } else {
+	echo "Record could not be replaced. File not found.\n";
     }
-    newsite();
 }
 
 function openurl() {
