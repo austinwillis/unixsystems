@@ -1,79 +1,108 @@
-#include <stdlib.h>  
-#include <stdio.h>  
-#include <iostream>  
-#include <sys/types.h>  
-#include <sys/wait.h>  
-#include <unistd.h>  
-#include <fcntl.h> 
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+#include <unistd.h>
+#include <sstream>
+#include <vector>
 
-int main(){  
-  const char* PROGRAM_NAME = "./child"; 
-    char arg1[] = "arg1"; 
-    char arg2[] = "arg2"; 
-  char *args[] = { arg1, arg2, NULL };  
+int p2c[2], c2p[2];
+using namespace std;
+vector<string> split(const string &s, char delim);
+vector<string> &split(const string &s, char delim, vector<string> &elems);
+string parse(string s);
 
-  int pipeForStdOut[2], pipeForStdErr[2];  
-  std::string cntStdOut, cntStdErr;  
+int main(int argc, char *argv[]) {
+	char buffer[200];
+  ssize_t bytesRead;
+  pid_t childPid;
+	string input;
 
-  char buf[32] = {0};  
-  ssize_t bytesRead;  
-  pid_t childPid;  
+  pipe(p2c);
+  pipe(c2p);
+  bool cmd;
+  if (argc < 2) {
+    cmd = false;
+  } else {
+    cmd = true;
+  }
+  childPid = fork();
+  if(childPid == -1){
+    perror("fork");
+    exit(-1);
+  }else if(childPid == 0){
+		close(p2c[1]);
+		close(c2p[0]);
+		dup2(p2c[0],0);
+		dup2(c2p[1],1);
+		execlp("maxima", "maxima", "-q", (char *)NULL);
+		perror("execlp");
+		cerr << "Failed to execute maxima" << endl;
+    exit(1);
+  } else {
+		string line;
+		close(p2c[0]);
+		close(c2p[1]);
+		write(p2c[1], "display2d:false;\n", strlen("display2d:false;\n"));
+		sleep(2);
+		read(c2p[0], buffer, sizeof(buffer)-1);
+		memset( buffer, '\0', sizeof(buffer));
+		if (cmd) {
+			for (int i = 1; i < argc; i++) {
+			  char str[strlen(argv[i])+10];
+        strcpy(str, "factor(");
+        strcat(str, argv[i]);
+        strcat(str, ");\n");
+        write(p2c[1], str, strlen(str));
+        sleep(2);
+        read(c2p[0], buffer, sizeof(buffer)-1);
+        line = string(buffer);
+				cout << argv[i] << " =" << parse(line) << endl;
+        memset( buffer, '\0', sizeof(buffer));	
+			}
+		} else {
+		while(input != "quit") {
+			cout << ">";
+			cin >> input;
+			if (input != "quit") {
+				char str[strlen(input.c_str())+10];
+				strcpy(str, "factor(");
+				strcat(str, input.c_str());
+				strcat(str, ");\n");
+				write(p2c[1], str, strlen(str));
+				sleep(2);
+				read(c2p[0], buffer, sizeof(buffer)-1);
+				line = string(buffer);
+        cout << parse(line) << endl;
+				memset( buffer, '\0', sizeof(buffer));
+			}
+		}
+		}
+		write(p2c[1], "quit();\n", strlen("quit();\n"));
+    return 0;
+	}
+}	
 
-  pipe(pipeForStdOut);  
-  pipe(pipeForStdErr);  
+string parse(string s) {
+	vector<string> lines = split(s, '\n');
+	string line = lines[1];
+	line.erase(0,5);
+	return line;
+}	
 
-  childPid = fork();  
-  if(childPid == -1){  
-    perror("fork");  
-    exit(-1);  
-  }else if(childPid == 0){ 
-        // remember 0 is for 1nput and 1 is for 0utput 
-        close(pipeForStdOut[0]); // parent keeps the input 
-        if(dup2(pipeForStdOut[1], 1) < 0) { // child gets the output end
-            perror("dup2.1");  
-            exit(-1);  
-        }  
 
-        close(pipeForStdErr[0]); // parent keeps the input 
-        if(dup2(pipeForStdErr[1], 2) < 0){  
-            perror("dup2.2");  
-            exit(-1);  
-        } 
-	//char * const args[] = {NULL, "-r", "\"expand((x+1)^7);\"", "-q", NULL};
-	char *const args[] =    {"/usr/bin/maxima", "-r", "factor(x^4+12*x^3+54*x^2+108*x+81);", "-q", NULL};
-	char * const envp[] = {NULL};
-        std::cout << "executing child..." << std::endl;  
-        if(execvp("/usr/bin/maxima", args) == -1){  
-      std::cout << "failed to execute child process, exiting..." << std::endl; 
-      perror("execve");  
-      exit(-1);  
-    }  
-    exit(0);  
-  }  
-  wait(NULL);  
+vector<string> &split(const string &s, char delim, vector<string> &elems) {
+  stringstream ss(s);
+  string item;
+  while (getline(ss, item, delim)) {
+    elems.push_back(item);
+  }
+  return elems;
+}
 
-  std::cout << "tidying up..." << std::endl;  
 
-    fcntl(pipeForStdOut[0], F_SETFL, O_NONBLOCK  | O_ASYNC);  
-   while(1) { 
-    bytesRead = read(pipeForStdOut[0], buf, sizeof(buf)-1); 
-    if (bytesRead <= 0) break; 
-    buf[bytesRead] = 0; // append null terminator 
-    cntStdOut += buf; // append what wuz read to the string 
-  }  
-  std::cout << "<stdout>\n" << cntStdOut << "\n</stdout>" << std::endl; 
-
-    fcntl(pipeForStdErr[0], F_SETFL, O_NONBLOCK  | O_ASYNC);  
-   while(1) { 
-    bytesRead = read(pipeForStdErr[0], buf, sizeof(buf)-1); 
-    if (bytesRead <= 0) break; 
-    buf[bytesRead] = 0; // append null terminator 
-    cntStdErr += buf; // append what wuz read to the string 
-  }  
-  std::cout << "<stderr>\n" << cntStdErr << "\n</stderr>" << std::endl; 
-
-  close(pipeForStdOut[0]);  
-  close(pipeForStdErr[0]);  
-
-  return 0;  
-}  
+vector<string> split(const string &s, char delim) {
+  vector<string> elems;
+  split(s, delim, elems);
+  return elems;
+}

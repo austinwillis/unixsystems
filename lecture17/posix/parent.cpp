@@ -41,7 +41,6 @@ int main()
 
    int mypid = getpid();
    sem = sem_open(sem_name.c_str(), 0);
-   sem_post(sem);
    while(true) {
       sem_wait(sem);
       foo(mypid);

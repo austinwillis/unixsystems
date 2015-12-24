@@ -3,10 +3,10 @@
 all: factor expand
 
 expand:
-	clang++ -o expand expand.cpp
+	g++ -o expand expand.cpp -std=c++11
 
 factor:
-	clang++ -o factor factor.cpp
+	g++ -o factor factor.cpp -std=c++11
 
 clean:
 	rm expand factor
