@@ -1,0 +1,24 @@
+To use the program first run the referee
+The referee will then wait for two clients to connect.
+
+To use the text based clients run the player program.
+The command line arguments for the player are the hostname
+and the port number that the referee chose.
+
+The player programs will then ask the user to enter either
+Rock, Paper or Scissors.
+
+STOP can be entered to quit the program and display a summary of the game.
+
+To use the graphical interface run the gui-player program.
+You will then enter the hostname and port number in the gui and click connect.
+
+After clicking connect on the gui it will wait for another player to connect
+and prompt you to click one of the choices.
+The buttons for each choice will be disabled until two players are connected.
+
+Whenever the player clicks on a choice it will wait until the other player
+chooses to display the results and allow you to choose again.
+
+Clicking the quit button will display a dialog with a summary of the game
+and closing the dialog will exit the program.

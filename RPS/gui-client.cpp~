@@ -1,0 +1,197 @@
+#include <iostream>
+#include <gtk/gtk.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <netdb.h>
+
+using namespace std;
+int SocketD;
+
+int something()
+{
+    GtkWidget *window;
+    GtkWidget *button;
+    GtkWidget *button1;
+    GtkWidget *button2;
+
+
+    int read_size;
+    SocketD = socket(AF_INET, SOCK_STREAM, 0);
+    struct hostent *host;
+    host = gethostbyname(argv[1]);
+    sockaddr_in SockAddr;
+    SockAddr.sin_port=htons(atoi(argv[2]));
+    SockAddr.sin_family=AF_INET;
+    SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
+
+    if (!connect(SocketD, (sockaddr*)&SockAddr, sizeof(SockAddr))) {
+    string input;
+    char go[3], choice[2], result[200], end[5];
+    bool stop = false;
+    cout << "Waiting for another player to join" << endl;
+    while (!stop) {
+        send(SocketD,"READY\0",sizeof("READY\0"),0);
+        recv(SocketD,go,sizeof(go),0);
+        go[2] = '\0';
+        if (strcmp(go, "GO") == 0) {
+    	    cout << "Enter Rock, Paper, Scissors" << endl; 
+    	    cin >> input;
+	    if (strcmp(input.c_str(), "STOP") == 0) {
+		choice[0] = 'Q';
+		choice[1] = '\0';
+    	    	send(SocketD, choice, sizeof(choice), 0);
+    	    	cout << "Waiting for other player" << endl;
+    	    	recv(SocketD, result, sizeof(result), 0);
+    	    	recv(SocketD, result, sizeof(result), 0);
+	    	result[199] = '\0';
+    	    	cout << result << endl;
+		stop = true;
+ 	    } else {
+    	    char c = toupper(input.c_str()[0]);
+	    if (c == 'R' || c == 'P' || c == 'S') {
+    	    	choice[0] = c;
+    	    	choice[1] = '\0';
+    	    	send(SocketD, choice, sizeof(choice), 0);
+    	    	cout << "Waiting for other player" << endl;
+    	    	recv(SocketD, result, sizeof(result), 0);
+    	    	recv(SocketD, result, sizeof(result), 0);
+	    	result[99] = '\0';
+		if (result[0] == 'Q') {
+		result[0] = ' ';
+    	    	cout << result << endl;
+		stop = true;
+		} else {
+    	    	   cout << result << endl;
+		}
+	    }
+	    }
+    }
+    }
+    } else cout << "Could not connect to server. Try again later." << endl;
+    close(SocketD);
+}
+
+static int window_delete (GtkWindow *window, gpointer data)
+{
+   gtk_main_quit();
+   return FALSE;
+}
+
+int main( int   argc,
+          char *argv[] )
+{
+    GtkWidget *window;
+    struct widptrs ptrs;
+    
+    gtk_init (&argc, &argv);
+    
+    window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    g_signal_connect(GTK_OBJECT(window), "delete_event",
+         GTK_SIGNAL_FUNC(window_delete), NULL);
+
+    GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
+
+    // Create first row
+    // It has a label and a text entry box
+    GtkWidget *hbox = gtk_hbox_new(FALSE, 0);
+    GtkWidget *label = gtk_label_new("Host: ");
+    gtk_widget_show  (label);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(label), TRUE, TRUE, 0);
+    
+    GtkWidget *num1 = gtk_entry_new();
+    ptrs.f1 = num1;
+    gtk_entry_set_text(GTK_ENTRY(num1), "0");
+    gtk_widget_show  (num1);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(num1), TRUE, TRUE, 0);
+
+    gtk_widget_show  (hbox);
+    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(hbox), FALSE, FALSE, 0);
+
+    // Create second row
+    // It has a label and a text entry box
+    label = gtk_label_new("Port: ");
+    gtk_widget_show  (label);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(label), TRUE, TRUE, 0);
+    
+    GtkWidget *num2 = gtk_entry_new();
+    ptrs.f2 = num2;
+    gtk_entry_set_text(GTK_ENTRY(num2), "0");
+    gtk_widget_show  (num2);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(num2), TRUE, TRUE, 0);
+
+    gtk_widget_show  (hbox);
+    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(hbox), FALSE, FALSE, 0);
+
+    // Create third row
+    // It has two labels
+    
+    // Create last row
+    // It has two buttons
+    GtkWidget *submit_button = gtk_button_new_with_label("Connect");
+    g_signal_connect(GTK_OBJECT(submit_button), "clicked",
+         GTK_SIGNAL_FUNC(do_calc), &ptrs);
+    gtk_widget_show  (submit_button);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(submit_button),
+        TRUE, TRUE, 0);
+
+    hbox = gtk_hbox_new(FALSE, 0);
+
+    GtkWidget *rock_button = gtk_button_new_with_label("Rock");
+    g_signal_connect(GTK_OBJECT(rock_button), "clicked",
+         GTK_SIGNAL_FUNC(do_calc), &ptrs);
+    gtk_widget_show  (rock_button);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(rock_button),
+        TRUE, TRUE, 0);
+
+    GtkWidget *paper_button = gtk_button_new_with_label("Paper");
+    g_signal_connect(GTK_OBJECT(paper_button), "clicked",
+         GTK_SIGNAL_FUNC(do_calc), &ptrs);
+    gtk_widget_show  (paper_button);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(paper_button),
+        TRUE, TRUE, 0);
+
+    GtkWidget *scissor_button = gtk_button_new_with_label("Scissors");
+    g_signal_connect(GTK_OBJECT(scissor_button), "clicked",
+         GTK_SIGNAL_FUNC(do_calc), &ptrs);
+    gtk_widget_show  (scissor_button);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(scissor_button),
+        TRUE, TRUE, 0);
+    gtk_widget_show  (hbox);
+    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(hbox), FALSE, FALSE, 0);
+
+    hbox = gtk_hbox_new(FALSE, 0);
+    label = gtk_label_new("Result: ");
+    gtk_widget_show  (label);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(label), TRUE, TRUE, 0);
+    
+    GtkWidget *total = gtk_label_new("0");
+    ptrs.f3 = total;
+    gtk_widget_show  (total);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(total), TRUE, TRUE, 0);
+
+    gtk_widget_show  (hbox);
+    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(hbox), FALSE, FALSE, 0);
+     
+    hbox = gtk_hbox_new(FALSE, 0);
+    GtkWidget *quit_button = gtk_button_new_with_label("Quit");
+    g_signal_connect(GTK_OBJECT(quit_button), "clicked",
+         GTK_SIGNAL_FUNC(window_delete), NULL);
+    gtk_widget_show  (quit_button);
+    gtk_box_pack_start(GTK_BOX(hbox), GTK_WIDGET(quit_button),
+        TRUE, TRUE, 0);
+
+    gtk_widget_show  (hbox);
+    gtk_box_pack_start(GTK_BOX(vbox), GTK_WIDGET(hbox), FALSE, FALSE, 0);
+
+    gtk_widget_show  (vbox);
+    gtk_widget_show  (window);
+    gtk_main ();
+    
+    return 0;
+}

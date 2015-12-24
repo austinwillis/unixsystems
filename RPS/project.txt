@@ -1,0 +1,42 @@
+start server
+	wait for connection
+		client connects
+			send message to player 1
+		client connects
+			send message to player 2
+		client connects
+			send message too many players
+				end thread
+begin loop
+	send message to each client to choose
+	wait for client response
+		if player 1 responds first
+			player1 = true
+			send player 1 message "wait on other player"
+		if p2
+			player2 = true
+			send player 2 message "wait on other player"
+	if player1 && player 2
+		decide winner
+		send winner message to both clients
+end loop
+
+
+
+
+start client
+	connect to server
+		wait for server response
+			if message is too many clients
+				exit
+begin loop
+	wait for message from server
+	wait for user input
+	send user choice to server
+	wait for server response
+		if server response is wait for other user
+			wait for server response
+	wait for server response
+		display winner of last choice
+end loop
+				
